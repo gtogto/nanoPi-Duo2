@@ -54,33 +54,10 @@ int main(void)
 		fprintf(stdout, "Unable to start wirintPi: %s\n", strerror (errno));
 		return 1;
 	}
-	/*
-	while(1)
-	{
-		scanf("%s", str1);
-		getchar();
-		sprintf(str, "send message : %s\n\r", str1);
-		uart_str(str);
-	}*/
-
 	    
     printf("waiting for messages, if you want program close, send to bye\n");
 	
 	while(1){
-		/*printf("choice menu\n");
-		scanf ("%d", &case_num);
-		switch(case_num)
-		{
-			case 1: 
-				printf("menu 1\n");
-				break;
-			case 2:
-				printf("menu 2\n");
-				break;
-			default:
-				break;
-		}*/
-
 		addr_len = sizeof(client_addr);
 		if ((recv_len = recvfrom(sock, recv_buffer, 1024, 0, 
 			(struct sockaddr *)&client_addr, &addr_len)) < 0)
@@ -112,6 +89,8 @@ int main(void)
 			getchar();
 			sprintf(str, "send data : %s\n\r", str1);
 			uart_str(str);
+
+			//data = serialGetchar(fd);
 
 		}
 		/*
