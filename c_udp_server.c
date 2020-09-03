@@ -101,7 +101,7 @@ int main(void)
 			sendto(sock, recv_buffer, strlen(recv_buffer), 0, 
 			(struct sockaddr *)&client_addr, sizeof(client_addr));
 			
-			printf("UART3 data : \n");
+			printf("UART3 data : ");
 			scanf("%s", str3_3);
 			getchar();
 			sprintf(str3, "send data3 : %s\n\r", str3_3);
@@ -114,7 +114,7 @@ int main(void)
 			fflush(stdout);
 			
 
-			printf("UART1 data : \n");
+			printf("UART1 data : ");
 			scanf("%s", str1_1);
 			getchar();
 			sprintf(str1, "send data1 : %s\n\r", str1_1);
@@ -124,8 +124,8 @@ int main(void)
 			printf("\nUART1 -> nano = %c\n", (char)data1);
 			serialPuts(fd, "\n");
 			fflush(stdout);
-			
-			if (data3 == 1) {
+			char compare_num = '1';
+			if (data1 == compare_num) {
 				ret = system("./gpio_on_shell");
 			}
 			else ret = system("./gpio_off_shell");
@@ -133,11 +133,6 @@ int main(void)
 			//data = serialGetchar(fd);
 
 		}
-		/*
-		scanf("%s", str1);
-		getchar();
-		sprintf(str, "send Data : %s\n\r", str1);
-		uart_str(str);*/
 
 	}	
 	close(sock);
