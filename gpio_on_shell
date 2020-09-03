@@ -1,0 +1,5 @@
+#!/bin/bash
+
+echo 1 >/sys/class/gpio/gpio11/value
+
+exit 0
