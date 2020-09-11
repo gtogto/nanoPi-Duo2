@@ -97,10 +97,21 @@ int main(void)
 			}			
 		}
 		else {
-			printf("UDP data receive >>>>>>>   %s \n", recv_buffer); 
-			sendto(sock, recv_buffer, strlen(recv_buffer), 0, 
-			(struct sockaddr *)&client_addr, sizeof(client_addr));
+			printf("UDP data receive : %s \n", recv_buffer); 
+			//sendto(sock, recv_buffer, strlen(recv_buffer), 0, (struct sockaddr *)&client_addr, sizeof(client_addr));
 			
+			//scanf("%s", str1_1);
+			//getchar();
+			sprintf(str1, "UDP -----> UART1 : %s\n\r", recv_buffer);
+			uart_str1(str1);
+
+			printf("UART1 -----> UDP : ");
+			scanf("%s", str1_1);
+			printf("\n");
+			sendto(sock, str1_1, strlen(str1_1), 0, (struct sockaddr *)&client_addr, sizeof(client_addr));
+			printf("uart send length : %d\n", sizeof(str1_1));
+			
+			/*
 			printf("UART3 data : \n");
 			scanf("%s", str3_3);
 			getchar();
@@ -129,7 +140,7 @@ int main(void)
 				ret = system("./gpio_on_shell");
 			}
 			else ret = system("./gpio_off_shell");
-			
+			*/
 			//data = serialGetchar(fd);
 
 		}
