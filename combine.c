@@ -39,11 +39,11 @@ int main(void)
 	/*========================================*/
 
 	/*============== UART struct ==============*/
-	char str1[100] = {0,};
-	char str1_1[100] = {0,};
+	char str1[1024] = {0,};
+	char str1_1[1024] = {0,};
 
-	char str3[100] = {0,};
-	char str3_3[100] = {0,};
+	char str3[1024] = {0,};
+	char str3_3[1024] = {0,};
 
 	int data1, data3;
 	/*=========================================*/
@@ -97,19 +97,19 @@ int main(void)
 			}			
 		}
 		else {
-			printf("UDP data receive : %s \n", recv_buffer); 
+			printf("Message received from UDP Client : %s \n", recv_buffer); 
 			//sendto(sock, recv_buffer, strlen(recv_buffer), 0, (struct sockaddr *)&client_addr, sizeof(client_addr));
 			
 			//scanf("%s", str1_1);
 			//getchar();
-			sprintf(str1, "UDP -----> UART1 : %s\n\r", recv_buffer);
+			sprintf(str1, "UDP ---------------------> UART1 : %s\n\r", recv_buffer);
 			uart_str1(str1);
 
-			printf("UART1 -----> UDP : ");
+			printf("UART1 ---------------------> UDP : ");
 			scanf("%s", str1_1);
 			printf("\n");
 			sendto(sock, str1_1, strlen(str1_1), 0, (struct sockaddr *)&client_addr, sizeof(client_addr));
-			printf("uart send length : %d\n", sizeof(str1_1));
+			//printf("uart send length : %d\n", sizeof(str1_1));
 			
 			/*
 			printf("UART3 data : \n");
