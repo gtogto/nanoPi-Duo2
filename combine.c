@@ -1,4 +1,5 @@
-#include <stdio.h> 
+#define _CRT_SECURE_NO_WARNINGS 
+#include <stdio.h>
 #include <string.h> 
 #include <unistd.h> 
 #include <stdlib.h>
@@ -6,6 +7,13 @@
 #include <sys/socket.h> 
 #include <netinet/in.h> 
 #include <arpa/inet.h> 
+#include <unistd.h>
+#include <sys/stat.h>
+#include <time.h>
+#include <math.h>
+
+#define TRUE 1
+#define FALSE 0
 #define PORT 8011
 
 #include <errno.h>
@@ -20,6 +28,9 @@ void uart_str3(char *str3);
 void uart_ch1(char ch);
 void uart_str1(char *str1);
 
+void append(char *dst, char c);
+void insert(char *dst, char c);
+
 char device1[] = "/dev/ttyS1";
 char device2[] = "/dev/ttyS3";
 
@@ -29,13 +40,22 @@ int fd;
 
 int main(void)
 { 
+	
 	/*============== UDP struct ==============*/
     int sock;
     struct sockaddr_in addr, client_addr; 
-    char recv_buffer[1024]; 
+    char recv_buffer[20]; 
+	//char *recv_buffer = malloc(sizeof(char) * 50);
+	char udp_buffer[2024];
     int recv_len; 
     int addr_len; 
    	char *exit = "bye";
+
+	char sp[2] = "[";
+
+	char sum_1[1024];
+	char sum_2[2014];
+
 	/*========================================*/
 
 	/*============== UART struct ==============*/
@@ -97,44 +117,51 @@ int main(void)
 			}			
 		}
 		else {
-			printf("Message received from UDP Client : %s \n", recv_buffer); 
+			printf("Message received from UDP Client : %s\n", recv_buffer); 
 			//sendto(sock, recv_buffer, strlen(recv_buffer), 0, (struct sockaddr *)&client_addr, sizeof(client_addr));
 			
+			//sprintf(str1, "%s", recv_buffer);
+
+			for (int i = 0; i<sizeof(recv_buffer); i++) {
+				printf("%c = 0x%02X\n", recv_buffer[i], recv_buffer[i]);
+				sprintf(str1, "%02X", recv_buffer[i]);
+			}
+
+			//printf("size : %d\n", sizeof(recv_buffer) / sizeof(char));
 			//scanf("%s", str1_1);
 			//getchar();
-			sprintf(str1, "UDP ---------------------> UART1 : %s\n\r", recv_buffer);
-			uart_str1(str1);
+			//sprintf(str1, "UDP ---------------------> UART1 : %s\n\r", recv_buffer);
+			//append('[', recv_buffer);
+			//insert(recv_buffer, '[');
+			//strcat(sp, recv_buffer);
+			//append(recv_buffer, ']');
+			//append(sp, recv_buffer);
+			//printf("Combined data : %c\n", recv_buffer);
 
+			/*
+			char temp[100+1];
+			int i=0;
+
+			memset(temp, 0x00, sizeof(temp));
+			memcpy(temp, recv_buffer, strlen(recv_buffer));
+			StrToHex(temp, strlen(temp));*/
+
+			uart_str1(str1);			
 			printf("UART1 ---------------------> UDP : ");
-			scanf("%s", str1_1);
+
+			/*scanf("%s", str1_1);
 			printf("\n");
-			sendto(sock, str1_1, strlen(str1_1), 0, (struct sockaddr *)&client_addr, sizeof(client_addr));
+			sendto(sock, str1_1, strlen(str1_1), 0, (struct sockaddr *)&client_addr, sizeof(client_addr));*/
+			
+			
+			scanf("%s", udp_buffer);
+			//getchar();
+			printf("\n\r");
+			sendto(sock, udp_buffer, strlen(udp_buffer), 0, (struct sockaddr *)&client_addr, sizeof(client_addr));
+
 			//printf("uart send length : %d\n", sizeof(str1_1));
 			
 			/*
-			printf("UART3 data : \n");
-			scanf("%s", str3_3);
-			getchar();
-			sprintf(str3, "send data3 : %s\n\r", str3_3);
-			uart_str3(str3);
-			
-			data3 = serialGetchar(fd);
-			printf("\nUART3 -> nano = %c\n", (char)data3);
-			serialPutchar(fd, data3);
-			serialPuts(fd, "\n");
-			fflush(stdout);
-			
-
-			printf("UART1 data : \n");
-			scanf("%s", str1_1);
-			getchar();
-			sprintf(str1, "send data1 : %s\n\r", str1_1);
-			uart_str1(str1);
-
-			data1 = serialGetchar(fd);
-			printf("\nUART1 -> nano = %c\n", (char)data1);
-			serialPuts(fd, "\n");
-			fflush(stdout);
 			
 			if (data3 == 1) {
 				ret = system("./gpio_on_shell");
@@ -144,13 +171,9 @@ int main(void)
 			//data = serialGetchar(fd);
 
 		}
-		/*
-		scanf("%s", str1);
-		getchar();
-		sprintf(str, "send Data : %s\n\r", str1);
-		uart_str(str);*/
-
+		//free(recv_buffer);
 	}	
+	//free(recv_buffer);
 	close(sock);
     return 0; 
 }
@@ -188,3 +211,95 @@ void uart_str3(char *str3)
 {
 	while(*str3) uart_ch3(*str3++);
 }
+
+void append(char *dst, char c) 
+{
+	char *p = dst;
+	while(*p != '\0') p++;
+	*p = c;
+	*(p+1) = '\0';
+}
+void insert(char *dst, char c)
+{
+	char *p = dst;
+	while(*p != '\0') p--;
+	*p = c;
+	*(p+1) = '\0';
+}
+
+/*
+int StrToHex(char* pBuf, int nBufSize)
+{
+	/* int   nBufSize = atoi(nBufSize); */
+	//if( pBuf==NULL || nBufSize<1 ){
+	/*if(pBuf!=NULL) {
+		printf(" HEX 로 변환할 문자열이 없습니다 \n");
+		return 0;
+	}*/
+/*	
+	printf("\n");
+	printf("        00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F\n");
+	printf("  =======================================================\n");
+	
+	const unsigned char* pData = (const unsigned char*)pBuf;
+	char szDataPart[100];  // left  /
+	char szViewPart[100];  // right /
+	memset(szDataPart, 0, sizeof(szDataPart));
+	memset(szViewPart, 0, sizeof(szViewPart));											
+	unsigned char byteHigh = 0;
+	for (int nPos = 0; nPos < nBufSize; nPos++) {
+		unsigned char b = pData[nPos];
+		char szHex[10];
+		sprintf(szHex, " %02X", b);
+		strcat(szDataPart, szHex);
+		if (byteHigh) {
+			if (strlen(szViewPart) == 0) {
+				if (!(nPos % 16) == 0) {
+					strcpy(szViewPart, " ");
+				}
+			}
+			szViewPart[strlen(szViewPart)] = byteHigh;
+			szViewPart[strlen(szViewPart)] = b;
+			byteHigh = 0;
+		} else {
+			if (strlen(szViewPart) == 0) {
+				szViewPart[strlen(szViewPart)] = ' ';
+			}
+			if (b < 0x20) {
+				szViewPart[strlen(szViewPart)] = '.';
+			} else if (b < 0x7F) {
+				szViewPart[strlen(szViewPart)] = b;
+			} else if (b < 0xA0) {
+				szViewPart[strlen(szViewPart)] = '.';
+			} else {
+				byteHigh = b;
+			}
+		}
+		
+		if (((nPos + 1) % 16) == 0) {
+			char szLine[200];
+			sprintf(szLine, "  %04X:%s : %s\n", (nPos / 16) * 16, szDataPart, szViewPart);
+			printf(szLine);
+			memset(szDataPart, 0, sizeof(szDataPart));
+			memset(szViewPart, 0, sizeof(szViewPart));
+		}
+	}
+	
+	if (0 != (nBufSize % 16)) {
+		char szBlank[100];
+		memset(szBlank, ' ', sizeof(szBlank));
+		szBlank[3 * (16 - (nBufSize % 16))] = '\0';
+		strcat(szDataPart, szBlank);
+		char szLine[200];
+		sprintf(szLine, "  %04X:%s : %s\n", (nBufSize / 16) * 16, szDataPart, szViewPart);
+		printf(szLine);
+		memset(szDataPart, 0, sizeof(szDataPart));
+		memset(szViewPart, 0, sizeof(szViewPart));
+	}
+	
+	printf("  =======================================================\n");
+	printf("        00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F\n");
+	printf("\n");
+	return 0;
+}
+*/
